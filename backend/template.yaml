@@ -1,5 +1,5 @@
 Resources:
-  demoServiceRole5E8D47D4:
+  createUserLambdaServiceRole77D6A031:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -16,13 +16,13 @@ Resources:
               - Ref: AWS::Partition
               - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
     Metadata:
-      aws:cdk:path: BackendStack/demo/ServiceRole/Resource
-  demo9A46DC86:
+      aws:cdk:path: BackendStack/createUserLambda/ServiceRole/Resource
+  createUserLambda12655EED:
     Type: AWS::Lambda::Function
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParametersc91c60aaaa34dc408ffa2a5fdd2898c23f80827a24f9ca4f704f325311f41dc1S3BucketBAC90272
+          Ref: AssetParameters00ad67f045f7a186ebcdafd91f6d37e94306bef2ace9b07c50210ed91bccf855S3Bucket45AB375F
         S3Key:
           Fn::Join:
             - ""
@@ -30,15 +30,15 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersc91c60aaaa34dc408ffa2a5fdd2898c23f80827a24f9ca4f704f325311f41dc1S3VersionKey417A7CF2
+                      - Ref: AssetParameters00ad67f045f7a186ebcdafd91f6d37e94306bef2ace9b07c50210ed91bccf855S3VersionKey9B4A8C2D
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParametersc91c60aaaa34dc408ffa2a5fdd2898c23f80827a24f9ca4f704f325311f41dc1S3VersionKey417A7CF2
+                      - Ref: AssetParameters00ad67f045f7a186ebcdafd91f6d37e94306bef2ace9b07c50210ed91bccf855S3VersionKey9B4A8C2D
       Role:
         Fn::GetAtt:
-          - demoServiceRole5E8D47D4
+          - createUserLambdaServiceRole77D6A031
           - Arn
       Environment:
         Variables:
@@ -46,28 +46,184 @@ Resources:
       Handler: index.handler
       Runtime: nodejs12.x
     DependsOn:
-      - demoServiceRole5E8D47D4
+      - createUserLambdaServiceRole77D6A031
     Metadata:
-      aws:cdk:path: BackendStack/demo/Resource
-      aws:asset:path: /Users/akiyoshi/go/src/github.com/akira393/2021-cognito-webauthn-SimpleWebAuthn/backend/cdk.out/asset.c91c60aaaa34dc408ffa2a5fdd2898c23f80827a24f9ca4f704f325311f41dc1
+      aws:cdk:path: BackendStack/createUserLambda/Resource
+      aws:asset:path: /Users/akiyoshi/go/src/github.com/akira393/2021-cognito-webauthn-SimpleWebAuthn/backend/cdk.out/asset.00ad67f045f7a186ebcdafd91f6d37e94306bef2ace9b07c50210ed91bccf855
       aws:asset:property: Code
+  LambdaRestApi95870433:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: LambdaRestApi
+    Metadata:
+      aws:cdk:path: BackendStack/LambdaRestApi/Resource
+  LambdaRestApiCloudWatchRole0992F076:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+    Metadata:
+      aws:cdk:path: BackendStack/LambdaRestApi/CloudWatchRole/Resource
+  LambdaRestApiAccount8249E005:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn:
+        Fn::GetAtt:
+          - LambdaRestApiCloudWatchRole0992F076
+          - Arn
+    DependsOn:
+      - LambdaRestApi95870433
+    Metadata:
+      aws:cdk:path: BackendStack/LambdaRestApi/Account
+  LambdaRestApiDeploymentBA640578ce278135b1b0189ea9d457287f13ea8b:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId:
+        Ref: LambdaRestApi95870433
+      Description: Automatically created by the RestApi construct
+    DependsOn:
+      - LambdaRestApitodoPOST05A511F6
+      - LambdaRestApitodoF803E607
+    Metadata:
+      aws:cdk:path: BackendStack/LambdaRestApi/Deployment/Resource
+  LambdaRestApiDeploymentStageprodB1F3862A:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId:
+        Ref: LambdaRestApi95870433
+      DeploymentId:
+        Ref: LambdaRestApiDeploymentBA640578ce278135b1b0189ea9d457287f13ea8b
+      StageName: prod
+    Metadata:
+      aws:cdk:path: BackendStack/LambdaRestApi/DeploymentStage.prod/Resource
+  LambdaRestApitodoF803E607:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - LambdaRestApi95870433
+          - RootResourceId
+      PathPart: todo
+      RestApiId:
+        Ref: LambdaRestApi95870433
+    Metadata:
+      aws:cdk:path: BackendStack/LambdaRestApi/Default/todo/Resource
+  LambdaRestApitodoPOSTApiPermissionBackendStackLambdaRestApi3972681APOSTtodoFE76C8B0:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createUserLambda12655EED
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: LambdaRestApi95870433
+            - /
+            - Ref: LambdaRestApiDeploymentStageprodB1F3862A
+            - /POST/todo
+    Metadata:
+      aws:cdk:path: BackendStack/LambdaRestApi/Default/todo/POST/ApiPermission.BackendStackLambdaRestApi3972681A.POST..todo
+  LambdaRestApitodoPOSTApiPermissionTestBackendStackLambdaRestApi3972681APOSTtodo93EF2BBD:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createUserLambda12655EED
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: LambdaRestApi95870433
+            - /test-invoke-stage/POST/todo
+    Metadata:
+      aws:cdk:path: BackendStack/LambdaRestApi/Default/todo/POST/ApiPermission.Test.BackendStackLambdaRestApi3972681A.POST..todo
+  LambdaRestApitodoPOST05A511F6:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: POST
+      ResourceId:
+        Ref: LambdaRestApitodoF803E607
+      RestApiId:
+        Ref: LambdaRestApi95870433
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - createUserLambda12655EED
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: BackendStack/LambdaRestApi/Default/todo/POST/Resource
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Modules: aws-cdk=1.87.1,@aws-cdk/assets=1.87.1,@aws-cdk/aws-applicationautoscaling=1.87.1,@aws-cdk/aws-autoscaling-common=1.87.1,@aws-cdk/aws-cloudwatch=1.87.1,@aws-cdk/aws-codeguruprofiler=1.87.1,@aws-cdk/aws-ec2=1.87.1,@aws-cdk/aws-ecr=1.87.1,@aws-cdk/aws-ecr-assets=1.87.1,@aws-cdk/aws-events=1.87.1,@aws-cdk/aws-iam=1.87.1,@aws-cdk/aws-kms=1.87.1,@aws-cdk/aws-lambda=1.87.1,@aws-cdk/aws-lambda-nodejs=1.87.1,@aws-cdk/aws-logs=1.87.1,@aws-cdk/aws-s3=1.87.1,@aws-cdk/aws-s3-assets=1.87.1,@aws-cdk/aws-sqs=1.87.1,@aws-cdk/aws-ssm=1.87.1,@aws-cdk/cloud-assembly-schema=1.87.1,@aws-cdk/core=1.87.1,@aws-cdk/cx-api=1.87.1,@aws-cdk/region-info=1.87.1,jsii-runtime=node.js/v12.14.1
+      Modules: aws-cdk=1.87.1,@aws-cdk/assets=1.87.1,@aws-cdk/aws-apigateway=1.87.1,@aws-cdk/aws-applicationautoscaling=1.87.1,@aws-cdk/aws-autoscaling-common=1.87.1,@aws-cdk/aws-cloudwatch=1.87.1,@aws-cdk/aws-codeguruprofiler=1.87.1,@aws-cdk/aws-ec2=1.87.1,@aws-cdk/aws-ecr=1.87.1,@aws-cdk/aws-ecr-assets=1.87.1,@aws-cdk/aws-events=1.87.1,@aws-cdk/aws-iam=1.87.1,@aws-cdk/aws-kms=1.87.1,@aws-cdk/aws-lambda=1.87.1,@aws-cdk/aws-lambda-nodejs=1.87.1,@aws-cdk/aws-logs=1.87.1,@aws-cdk/aws-s3=1.87.1,@aws-cdk/aws-s3-assets=1.87.1,@aws-cdk/aws-sqs=1.87.1,@aws-cdk/aws-ssm=1.87.1,@aws-cdk/cloud-assembly-schema=1.87.1,@aws-cdk/core=1.87.1,@aws-cdk/cx-api=1.87.1,@aws-cdk/region-info=1.87.1,jsii-runtime=node.js/v12.14.1
     Metadata:
       aws:cdk:path: BackendStack/CDKMetadata/Default
     Condition: CDKMetadataAvailable
 Parameters:
-  AssetParametersc91c60aaaa34dc408ffa2a5fdd2898c23f80827a24f9ca4f704f325311f41dc1S3BucketBAC90272:
+  AssetParameters00ad67f045f7a186ebcdafd91f6d37e94306bef2ace9b07c50210ed91bccf855S3Bucket45AB375F:
     Type: String
-    Description: S3 bucket for asset "c91c60aaaa34dc408ffa2a5fdd2898c23f80827a24f9ca4f704f325311f41dc1"
-  AssetParametersc91c60aaaa34dc408ffa2a5fdd2898c23f80827a24f9ca4f704f325311f41dc1S3VersionKey417A7CF2:
+    Description: S3 bucket for asset "00ad67f045f7a186ebcdafd91f6d37e94306bef2ace9b07c50210ed91bccf855"
+  AssetParameters00ad67f045f7a186ebcdafd91f6d37e94306bef2ace9b07c50210ed91bccf855S3VersionKey9B4A8C2D:
     Type: String
-    Description: S3 key for asset version "c91c60aaaa34dc408ffa2a5fdd2898c23f80827a24f9ca4f704f325311f41dc1"
-  AssetParametersc91c60aaaa34dc408ffa2a5fdd2898c23f80827a24f9ca4f704f325311f41dc1ArtifactHash59F5121C:
+    Description: S3 key for asset version "00ad67f045f7a186ebcdafd91f6d37e94306bef2ace9b07c50210ed91bccf855"
+  AssetParameters00ad67f045f7a186ebcdafd91f6d37e94306bef2ace9b07c50210ed91bccf855ArtifactHash514B2FDA:
     Type: String
-    Description: Artifact hash for asset "c91c60aaaa34dc408ffa2a5fdd2898c23f80827a24f9ca4f704f325311f41dc1"
+    Description: Artifact hash for asset "00ad67f045f7a186ebcdafd91f6d37e94306bef2ace9b07c50210ed91bccf855"
+Outputs:
+  LambdaRestApiEndpointCCECE4C1:
+    Value:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: LambdaRestApi95870433
+          - .execute-api.
+          - Ref: AWS::Region
+          - "."
+          - Ref: AWS::URLSuffix
+          - /
+          - Ref: LambdaRestApiDeploymentStageprodB1F3862A
+          - /
 Conditions:
   CDKMetadataAvailable:
     Fn::Or:
