@@ -1,0 +1,37 @@
+{
+    "AttributeDefinitions": [
+        {
+            "AttributeName": "user_id",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "user_name",
+            "AttributeType": "S"
+        }
+    ],
+    "GlobalSecondaryIndexes": [
+        {
+            "IndexName": "userTable-Index",
+            "Projection": {
+                "ProjectionType": "ALL"
+            },
+            "KeySchema": [
+                {
+                    "KeyType": "HASH",
+                    "AttributeName": "user_name"
+                }
+            ],
+            "ProvisionedThroughput":{
+                "WriteCapacityUnits": 5,
+                "ReadCapacityUnits": 5
+            }
+        }
+    ],
+    "TableName": "userTable",
+    "KeySchema": [
+        {
+            "AttributeName": "user_id",
+            "KeyType": "HASH"
+        }
+    ]
+}

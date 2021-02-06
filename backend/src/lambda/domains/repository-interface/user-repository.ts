@@ -1,7 +1,9 @@
-import { User } from "../model/User";
+import { User, UserId, UserName } from "../model/User";
 
 export abstract class IUserRepository {
+    findById:(id:UserId)=>Promise<User|undefined>
+    findByName:(name:UserName)=>Promise<User|undefined>
     save:(user:User)=>Promise<void>
-    getById:(id:number)=>Promise<User|undefined>
-
+    delete:(user:User)=>Promise<void>
+    getAll:()=>Promise<User[]|undefined>
 }
