@@ -1,8 +1,8 @@
 import { APIGatewayEventRequestContext, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import UserRepository from "../infrastructure/user-repository"
+import UserRepository from "../infrastructure/UserRepository"
 import Log from "@dazn/lambda-powertools-logger"
-import { UserNameAlreadyExist} from "../application-service/users/user-error"
-import { UserGetAllService } from '../application-service/users/user-get-all-service';
+import { UserNameAlreadyExist} from "../applicationService/Users/user-error"
+import { UserGetAllService } from '../applicationService/Users/UserGetAllService';
 
 
 export async function handler(
@@ -15,10 +15,6 @@ export async function handler(
 
     try {
         const allUsers=await userGetAllService.execute()
-        allUsers?.map((u)=>{
-
-            console.log(u)
-        })
         return {
             statusCode: 200,
             body: JSON.stringify({

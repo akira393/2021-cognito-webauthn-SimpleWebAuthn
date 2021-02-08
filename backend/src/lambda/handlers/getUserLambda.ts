@@ -1,8 +1,8 @@
 import { APIGatewayEventRequestContext, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import UserRepository from "../infrastructure/user-repository"
+import UserRepository from "../infrastructure/UserRepository"
 import Log from "@dazn/lambda-powertools-logger"
-import { UserNameAlreadyExist} from "../application-service/users/user-error"
-import { UserGetService } from '../application-service/users/user-get-service';
+import { UserNameAlreadyExist} from "../applicationService/Users/user-error"
+import { UserGetService } from '../applicationService/Users/UserGetService';
 
 
 export async function handler(

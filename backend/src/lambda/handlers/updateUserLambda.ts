@@ -1,10 +1,10 @@
 import { APIGatewayEventRequestContext, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import UserRepository from "../infrastructure/user-repository"
+import UserRepository from "../infrastructure/UserRepository"
 import Log from "@dazn/lambda-powertools-logger"
-import { UserNameAlreadyExist} from "../application-service/users/user-error"
-import { UserUpdateService } from '../application-service/users/user-update-service';
+import { UserNameAlreadyExist} from "../applicationService/Users/user-error"
+import { UserUpdateService } from '../applicationService/Users/UserUpdateService';
 import { UserService } from '../domains/service/User';
-import { UserUpdateCommand } from '../application-service/users/command/user-update-command';
+import { UserUpdateCommand } from '../applicationService/Users/command/UserUpdateCommand';
 
 
 export async function handler(
@@ -24,8 +24,8 @@ export async function handler(
         if (!event.body){
             throw new Error("リクエストがからです。")
         }
-        const {username:newUserName,usermailladress:newUserMaillAdress}=JSON.parse(event.body);
-        const updateCommand=new UserUpdateCommand({id:id,name:newUserName,maillAdress:newUserMaillAdress})
+        const {userName,userMailAddress}=JSON.parse(event.body);
+        const updateCommand=new UserUpdateCommand({id:id,name:userName,mailAddress:userMailAddress})
         await userUpdateService.execute(updateCommand)
 
         return {

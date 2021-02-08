@@ -1,5 +1,6 @@
+import { UserDataModelBuilder } from "../../applicationService/Users/UserData";
 import { User, UserName } from "../model/User";
-import { IUserRepository } from "../repository-interface/user-repository";
+import { IUserRepository } from "../repositoryInterface/IUserRepository";
 
 
 export class UserService {
@@ -9,11 +10,14 @@ export class UserService {
         this.userRepository = userRepository
     }
 
-    /*同じユーザ名を探す */
+
     async Exist(user: User): Promise<boolean> {
-        const name=UserName.create(user.name)
+        const userDataModelBuilder=new UserDataModelBuilder()
+        user.notify(userDataModelBuilder)
+        const userDataModel=userDataModelBuilder.Build()
+
+        const name=UserName.create(userDataModel.name)
         const duplicatedUser = await this.userRepository.findByName(name)
-        console.log({duplicatedUser})
         return duplicatedUser!==undefined
     }
 }

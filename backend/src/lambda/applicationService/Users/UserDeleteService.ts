@@ -1,6 +1,6 @@
 import { UserId} from "../../domains/model/User";
-import { IUserRepository } from "../../domains/repository-interface/user-repository";
-import { UserDeleteCommand } from "./command/user-delete-command";
+import { IUserRepository } from "../../domains/repositoryInterface/IUserRepository";
+import { UserDeleteCommand } from "./command/UserDeleteCommand";
 import { UserNotFoundException} from "./user-error"
 
 export class UserDeleteService {
@@ -15,9 +15,9 @@ export class UserDeleteService {
         if (user === undefined) {
             // 存在しなかったときは例外を出しているが、正常終了させるでも良いかな
             //return
-            throw new UserNotFoundException(`${targetId}は存在しません。`)
+            throw new UserNotFoundException(`${command.id}は存在しません。`)
         }
-        this.userRepository.delete(user)
+        await this.userRepository.delete(user)
 
 
     }

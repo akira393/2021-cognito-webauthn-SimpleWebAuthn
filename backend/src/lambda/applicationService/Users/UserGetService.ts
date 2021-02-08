@@ -1,6 +1,6 @@
+import {UserDataModel, UserDataModelBuilder} from "./UserData"
 import { UserId } from "../../domains/model/User";
-import { IUserRepository } from "../../domains/repository-interface/user-repository";
-import { UserData } from "../../domains/model/UserData";
+import { IUserRepository } from "../../domains/repositoryInterface/IUserRepository";
 
 export class UserGetService {
     private userRepository: IUserRepository
@@ -9,13 +9,16 @@ export class UserGetService {
         this.userRepository = userRepository
     }
     //dtoに差し替えて、userデータを返却
-    async execute(id: string) :Promise<undefined|UserData>{
+    async execute(id: string) :Promise<undefined|UserDataModel>{
         const targetId = UserId.create(id)
         const user = await this.userRepository.findById(targetId)
         if (user === undefined) {
             return undefined
         }
-        const userData = new UserData(user)
-        return userData
+        const userDataModelBuilder=new UserDataModelBuilder()
+        user.notify(userDataModelBuilder)
+        const userDataModel=userDataModelBuilder.Build()
+
+        return userDataModel
     }
 }

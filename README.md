@@ -1,12 +1,5 @@
 
-
-## local実行のsetup
-
-```
-docker network create sam-cli
-npx cdk synth --no-staging >template.yaml
-sam local start-api -t template.yaml --docker-network sam-cli
-```
+## 概要
 
 /users/
     post(username,useradress)
@@ -27,21 +20,16 @@ sam local start-api -t template.yaml --docker-network sam-cli
     return ok,error(500)すでにいない
 
 
-## todo
 
-create以外のlambdaとリソースの定義をしちゃう
-readmeの拡充
-    setup（なんとなくやったところの調査もする。）
-openapiの仕様を作成する
-
-
-## 改善点
+## 実装上の注意
 
 エンティティ（user）にgetterとセッターを定義しちゃう。。。
+->通知オブジェクトを作ってid以外はprivateメソッドに変更
 
+## ハマり・ミスポイント
 
-## ハマりポイント
-ソートキーで検索したときは、グローバルインデックスに設定する。
+- ソートキーで検索したときは、グローバルインデックスに設定する。
+- ドメインオブジェクトでsdkのattributeの値として渡してしまって、`Invalid attribute value type`になる。.valueをつけようね
 
 ## setup
 

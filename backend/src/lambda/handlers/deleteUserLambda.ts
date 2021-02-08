@@ -1,9 +1,9 @@
 import { APIGatewayEventRequestContext, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import UserRepository from "../infrastructure/user-repository"
+import UserRepository from "../infrastructure/UserRepository"
 import Log from "@dazn/lambda-powertools-logger"
-import { UserNameAlreadyExist} from "../application-service/users/user-error"
-import { UserDeleteService } from '../application-service/users/user-delete-service';
-import { UserDeleteCommand } from '../application-service/users/command/user-delete-command';
+import { UserNameAlreadyExist} from "../applicationService/Users/user-error"
+import { UserDeleteService } from '../applicationService/Users/UserDeleteService';
+import { UserDeleteCommand } from '../applicationService/Users/command/UserDeleteCommand';
 
 
 export async function handler(
