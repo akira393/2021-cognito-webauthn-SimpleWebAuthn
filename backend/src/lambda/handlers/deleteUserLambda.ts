@@ -1,5 +1,6 @@
+import 'reflect-metadata'
+import { container } from '../config';
 import { APIGatewayEventRequestContext, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import UserRepository from "../infrastructure/UserRepository"
 import Log from "@dazn/lambda-powertools-logger"
 import { UserNameAlreadyExist} from "../applicationService/Users/user-error"
 import { UserDeleteService } from '../applicationService/Users/UserDeleteService';
@@ -11,8 +12,7 @@ export async function handler(
     context: APIGatewayEventRequestContext
 ): Promise<APIGatewayProxyResult> {
 
-    const userRepository = new UserRepository()
-    const userDeleteService=new UserDeleteService(userRepository)
+    const userDeleteService=container.resolve<UserDeleteService>("UserDeleteService")
 
     try {
         const id=event.pathParameters?event.pathParameters["userId"]:undefined

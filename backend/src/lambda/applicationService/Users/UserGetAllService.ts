@@ -1,15 +1,12 @@
+import { injectable, inject } from 'tsyringe'
 import { User } from "../../domains/model/User";
 import { IUserRepository } from "../../domains/repositoryInterface/IUserRepository";
 import { UserDataModel, UserDataModelBuilder } from "./UserData";
 
+@injectable()
 export class UserGetAllService {
-    private userRepository: IUserRepository
+    constructor(@inject('UserRepository') private userRepository: IUserRepository) {}
 
-    constructor(userRepository: IUserRepository) {
-        this.userRepository = userRepository
-    }
-
-    //dtoに差し替えて、userデータを返却
     async execute() :Promise<undefined|UserDataModel[]>{
         const users = await this.userRepository.getAll()
         if (users === undefined) {

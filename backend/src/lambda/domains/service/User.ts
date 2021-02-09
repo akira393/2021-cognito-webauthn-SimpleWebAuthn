@@ -1,14 +1,12 @@
+import { inject, injectable } from "tsyringe";
 import { UserDataModelBuilder } from "../../applicationService/Users/UserData";
 import { User, UserName } from "../model/User";
 import { IUserRepository } from "../repositoryInterface/IUserRepository";
 
-
+@injectable()
 export class UserService {
-    private userRepository: IUserRepository
+    constructor(@inject('UserRepository') private userRepository: IUserRepository) {}
 
-    constructor(userRepository: IUserRepository) {
-        this.userRepository = userRepository
-    }
 
 
     async Exist(user: User): Promise<boolean> {

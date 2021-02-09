@@ -1,8 +1,8 @@
+import 'reflect-metadata'
+import { container } from '../config';
 import { APIGatewayEventRequestContext, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import UserRepository from "../infrastructure/UserRepository"
 import Log from "@dazn/lambda-powertools-logger"
 import { UserRegisterService } from '../applicationService/Users/UserRegisterService';
-import { UserService } from '../domains/service/User';
 import { UserNameAlreadyExist} from "../applicationService/Users/user-error"
 
 
@@ -11,9 +11,7 @@ export async function handler(
     context: APIGatewayEventRequestContext
 ): Promise<APIGatewayProxyResult> {
 
-    const userRepository = new UserRepository()
-    const userService=new UserService(userRepository)
-    const userRegisterService = new UserRegisterService(userRepository,userService)
+    const userRegisterService=container.resolve<UserRegisterService>('UserRegisterService')
     try {
 
         const { userName,userMailAddress } = JSON.parse(event.body||"");

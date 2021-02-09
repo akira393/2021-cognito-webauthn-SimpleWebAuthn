@@ -1,14 +1,13 @@
+import { inject, injectable } from "tsyringe";
 import { UserId} from "../../domains/model/User";
 import { IUserRepository } from "../../domains/repositoryInterface/IUserRepository";
 import { UserDeleteCommand } from "./command/UserDeleteCommand";
 import { UserNotFoundException} from "./user-error"
 
+@injectable()
 export class UserDeleteService {
-    private userRepository: IUserRepository
+    constructor(@inject('UserRepository') private userRepository: IUserRepository) {}
 
-    constructor(userRepository: IUserRepository) {
-        this.userRepository = userRepository
-    }
     async execute(command:UserDeleteCommand){
         var targetId = UserId.create(command.id)
         const user = await this.userRepository.findById(targetId)

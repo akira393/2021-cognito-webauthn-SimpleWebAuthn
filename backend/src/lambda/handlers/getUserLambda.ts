@@ -1,17 +1,17 @@
+import 'reflect-metadata'
+import { container } from '../config';
 import { APIGatewayEventRequestContext, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import UserRepository from "../infrastructure/UserRepository"
 import Log from "@dazn/lambda-powertools-logger"
 import { UserNameAlreadyExist} from "../applicationService/Users/user-error"
 import { UserGetService } from '../applicationService/Users/UserGetService';
-
 
 export async function handler(
     event: APIGatewayProxyEvent,
     context: APIGatewayEventRequestContext
 ): Promise<APIGatewayProxyResult> {
 
-    const userRepository = new UserRepository()
-    const userGetService=new UserGetService(userRepository)
+    const userGetService=container.resolve<UserGetService>("UserGetService")
+
 
     try {
         const id=event.pathParameters?event.pathParameters["userId"]:undefined

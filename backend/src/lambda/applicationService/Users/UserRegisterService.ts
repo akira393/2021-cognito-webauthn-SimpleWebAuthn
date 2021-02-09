@@ -3,17 +3,12 @@ import { IUserRepository } from "../../domains/repositoryInterface/IUserReposito
 import { UserService } from "../../domains/service/User";
 import { v4 as uuidv4 } from "uuid"
 import { UserNameAlreadyExist} from "./user-error"
+import { inject, injectable } from "tsyringe";
 
 
-
+@injectable()
 export class UserRegisterService {
-    private userRepository: IUserRepository
-    private userService: UserService
-
-    constructor(userRepository: IUserRepository, userService: UserService) {
-        this.userRepository = userRepository
-        this.userService = userService
-    }
+    constructor(@inject('UserRepository') private userRepository: IUserRepository,@inject('UserService') private userService:UserService) {}
     async execute(name: string, mailAddress: string) {
         var user = new User({
             id: UserId.create(uuidv4().toString()),

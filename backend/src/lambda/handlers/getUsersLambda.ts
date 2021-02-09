@@ -1,5 +1,6 @@
+import 'reflect-metadata'
+import { container } from '../config';
 import { APIGatewayEventRequestContext, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import UserRepository from "../infrastructure/UserRepository"
 import Log from "@dazn/lambda-powertools-logger"
 import { UserNameAlreadyExist} from "../applicationService/Users/user-error"
 import { UserGetAllService } from '../applicationService/Users/UserGetAllService';
@@ -8,12 +9,9 @@ import { UserGetAllService } from '../applicationService/Users/UserGetAllService
 export async function handler(
     event: APIGatewayProxyEvent,
     context: APIGatewayEventRequestContext
-): Promise<APIGatewayProxyResult> {
-
-    const userRepository = new UserRepository()
-    const userGetAllService=new UserGetAllService(userRepository)
-
+): Promise<APIGatewayProxyResult> {    
     try {
+        const userGetAllService=container.resolve<UserGetAllService>('UserGetAllService')
         const allUsers=await userGetAllService.execute()
         return {
             statusCode: 200,

@@ -1,11 +1,14 @@
+import { injectable } from 'tsyringe'
 import { User, UserId, UserMailAddress, UserName } from "../domains/model/User";
 import { IUserRepository } from "../domains/repositoryInterface/IUserRepository";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { UserDataModelBuilder } from "../applicationService/Users/UserData";
 
+
 const TABLE_NAME = process.env.TABLE_NAME || "userTable";
 const INDEX_TABLE_NAME = process.env.TABLE_NAME || "userTable-Index";
 
+@injectable()
 export default class UserRepository implements IUserRepository {
     private client: DocumentClient
     constructor() {
