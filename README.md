@@ -34,11 +34,15 @@ apiの概要
 
 ## setup
 
-```
+```bash
 git clone ~~
 cd 2021-...
 docker-compose up -d
-aws dynamodb create-table --cli-input-json file://user-table.json  --endpoint-url http://localhost:8000 --billing-mode PAY_PER_REQUEST
+
+#テーブルの作成
+aws dynamodb create-table --cli-input-json file://user-table.json --endpoint-url http://localhost:8000 --billing-mode PAY_PER_REQUEST
+#リポジトリのエンドポイントの修正(docker network inspect sam-cliなどで)
+
 cd backend
 npx cdk synth --no-staging >template.yaml && sam local start-api -t template.yaml --docker-network sam-cli
 ```

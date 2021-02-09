@@ -5,9 +5,7 @@ services:
         container_name: dynamodb
         ports:
             - 8000:8000
-        command: -jar DynamoDBLocal.jar -dbPath /data
-        volumes:
-            - $PWD/dynamodb:/data
+        command: -jar DynamoDBLocal.jar -inMemory -sharedDb
         networks:
             - sam-cli
 networks:

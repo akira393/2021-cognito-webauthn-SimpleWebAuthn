@@ -11,8 +11,7 @@ export default class UserRepository implements IUserRepository {
     constructor() {
 
         this.client = new DocumentClient({
-            region: "ap-northeast-1",
-            endpoint: "http://172.26.0.1:8000"
+            endpoint: "http://172.18.0.2:8000"
         })
     }
     async getAll() {
